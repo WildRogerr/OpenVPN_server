@@ -38,7 +38,7 @@ revoke_certificate () {
     fi
 }
 
-сopy_сertificate_files () {
+copy_certificate_files () {
     mkdir /home/wildroger/cert_user_files/$1
     cp /home/wildroger/config_files/vpnserver.kz.ovpn /home/wildroger/cert_user_files/$1/
     cp /etc/openvpn/ca/pki/issued/$1.crt /home/wildroger/cert_user_files/$1/
@@ -93,13 +93,13 @@ enter_number () {
         generate_certificate
         local CLIENT_NAME="$_RESULT"
         sign_request "$CLIENT_NAME"
-        сopy_сertificate_files "$CLIENT_NAME"
+        copy_certificate_files "$CLIENT_NAME"
 
     elif [[ "$REPLY" = "2" ]]; then
         generate_certificate_no_password
         local CLIENT_NAME="$_RESULT"
         sign_request "$CLIENT_NAME"
-        сopy_сertificate_files "$CLIENT_NAME"
+        copy_certificate_files "$CLIENT_NAME"
 
     elif [[ "$REPLY" = "3" ]]; then
         revoke_certificate
