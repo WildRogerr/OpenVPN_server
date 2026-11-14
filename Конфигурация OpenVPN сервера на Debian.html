@@ -229,8 +229,8 @@
             <h3 name="a1"><a name="27">4.5. Сгенерируем ключ HMAC:</a></h3>
                 <p class="quote"># openvpn --genkey secret pki/ta.key</p>
             <h3 name="a1"><a name="28">Запустим easyrsa для генерации закрытого серверного ключа:</a></h3>
-                <p class="quote"># ./easyrsa gen-req vpnserver.kz nopass<br>
-                # ./easyrsa sign-req server vpnserver.kz</p>
+                <p class="quote"># ./easyrsa gen-req vpnserver nopass<br>
+                # ./easyrsa sign-req server vpnserver</p>
             <h3 name="a1"><a name="29">4.7. Собрать все нужные файлы (ключ и сертификат сервера, файл Diffie-Hellman, сертификата ЦС и ключа HMАC) путем копирования в директорию /etc/openvpn/server:</a></h3>
                 <p class="quote"># cp pki/private/serverspace.key pki/issued/serverspace.crt pki/dh.pem pki/ca.crt pki/ta.key /etc/openvpn/server/</p>
             <h3 name="a1"><a name="30">4.8. Подготовим серверный конфиг-файл:</a></h3>
@@ -244,12 +244,12 @@
                 <br>
                 tls-server<br>
                 ca /etc/openvpn/server/ca.crt<br>
-                cert /etc/openvpn/server/vpnserver.kz.crt<br>
-                key /etc/openvpn/server/vpnserver.kz.key<br>
+                cert /etc/openvpn/server/vpnserver.crt<br>
+                key /etc/openvpn/server/vpnserver.key<br>
                 dh /etc/openvpn/server/dh.pem<br>
                 tls-auth /etc/openvpn/server/ta.key 0<br>
                 <br>
-                server 8.20.30.0 255.255.255.0<br>
+                server 10.20.30.0 255.255.255.0<br>
                 push "redirect-gateway def1 bypass-dhcp"<br>
                 push "dhcp-option DNS 8.8.8.8"<br>
                 ifconfig-pool-persist ipp.txt<br>
@@ -272,20 +272,20 @@
             <h3 name="a1"><a name="32">4.10. Добавим сервер в автозагрузку:</a></h3>
                 <p class="quote"># systemctl enable openvpn@server.service</p>
             <h3 name="a1"><a name="33">4.11. Выполним запрос, генерирующий закрытый ключ, и соответствующий клиентский сертификат:</a></h3>
-                <p class="quote"># ./easy-rsa gen-req client_1</p>
+                <p class="quote"># ./easyrsa gen-req client_1</p>
             <h3 name="a1"><a name="34">4.12. Подпишем файл созданного запроса:</a></h3>
-                <p class="quote"># ./easyrsa sign-req client_1</p>
+                <p class="quote"># ./easyrsa sign-req client client_1</p>
             <h3 name="a1"><a name="35">4.13. Создадим папку файлов конфигураций пользователей и скопировать в нее файлы:</a></h3>
                 <p class="quote">$ mkdir ~/config_filess<br>
                 $ sudo cp /etc/openvpn/ca/pki/ca.crt ~/config_files/</br>
                 $ sudo cp /etc/openvpn/ca/pki/ta.key ~/config_files/</p>           
             <h3 name="a1"><a name="36">4.15. Подготовим конфиг клиента:</a></h3>
-                <p>Добавим его в файл: ~/config_files/vpnserver.kz.ovpn</p>
-                <p class="quote">$ nano ~/config_files/vpnserver.kz.ovpn</p>
+                <p>Добавим его в файл: ~/config_files/vpnserver.ovpn</p>
+                <p class="quote">$ nano ~/config_files/vpnserver.ovpn</p>
                 <p class="config">client<br>
                 dev tun<br>
                 proto tcp<br>
-                remote 193.108.114.119<br>
+                remote "ip-server"<br>
                 port 443<br>
                 resolv-retry infinite<br>
                 nobind<br>
@@ -322,7 +322,7 @@
                 DEV='eth0'<br>
                 <br> 
                 # Значение подсети<br>
-                PRIVATE=8.20.30.0/24<br>
+                PRIVATE=10.20.30.0/24<br>
                 <br> 
                 if [ -z "$DEV" ]; then<br>
                 DEV="$(ip route | grep default | head -n 1 | awk '{print $5}')"<br>
